@@ -32,3 +32,6 @@ next-env.d.ts
 
 # oh-my-claudecode artifacts
 .omc/
+
+# non-npm lockfile
+bun.lock
