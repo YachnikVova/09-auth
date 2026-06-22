@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useDebounce } from 'use-debounce';
 import Link from 'next/link';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { fetchNotes, type FetchNotesResponse } from '@/lib/api/clientApi';
@@ -17,12 +18,13 @@ interface Props {
 export default function Notes({ initialData, tag }: Props) {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [debouncedSearch] = useDebounce(search, 300);
 
   const { data } = useQuery({
-    queryKey: ['notes', search, page, tag],
-    queryFn: () => fetchNotes({ search, page, tag }),
+    queryKey: ['notes', debouncedSearch, page, tag],
+    queryFn: () => fetchNotes({ search: debouncedSearch, page, tag }),
     placeholderData: keepPreviousData,
-    initialData: search === '' && page === 1 ? initialData : undefined,
+    initialData: debouncedSearch === '' && page === 1 ? initialData : undefined,
   });
 
   const totalPages = data?.totalPages ?? 0;
